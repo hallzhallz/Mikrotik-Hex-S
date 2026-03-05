@@ -133,18 +133,32 @@ add address-pool=guest-pool interface=guest-vlan disabled=no name=guest-dhcp
 ```
 
 ## Domain Name Server
-We are going to tell the router to use the CloudFlare DNS and Google Servers as they are fast. If you want to use your ISPs DNS details then skip this step.
+We are going to tell the router to use the CloudFlare DNS with malware protection (Google and Quad9 DNS are also good options). If you want to use your ISPs DNS details or your ISP blocks thirdy party DNS Servers then skip this step.
 
 ```
-# set the dns main static and google and cloudflare
+# set a static name for the router on the local network
 /ip dns static
 set address=192.168.100.1 [find name=router.lan]
+# set the DNS servers to Cloudlflare
 /ip dns 
-set servers=1.1.1.1,8.8.8.8,1.0.0.1,8.8.4.4
+set servers=1.1.1.2,1.0.0.2
 # disable ISP DNS servers obtained through DHCP.
 /ip dhcp-client
 set  use-peer-dns=no [find interface=ether1]
 ```
+
+We can also setup DNS over HTTPS DoH. On a v6 router you need to install the CA certificate (v7 should have CA certificates pre-installed so should work with just the last command).
+
+```
+# Download the DIgiCert Global Root G2 Certificate
+/tool fetch url=https://cacerts.digicert.com/DigiCertGlobalRootG2.crt.pem
+# Import the certificate into the router
+/certificate import file-name=DigiCertGlobalRootG2.crt.pem passphrase=""
+# Setup the router to use DoH with cloudflare malware protected dns
+/ip dns set use-doh-server=https://1.1.1.2/dns-query verify-doh-cert=yes
+
+```
+You can confirm the certificate is the right one by visiting the 1.1.1.2 url below in the browser and viewing the certificate, then downloading and viewing the DigiCert certificate (On windows set certificate file extension to .crt to view). The Digicet thumbrint should match the root certificate thumbrint from the cloudflar url.
 
 ## VLAN Port Configuration
 We need to tell the router which VLANs should relate to which ports. Note that Ports 2 and 5 are Hybrid ports and are configured with multiple VLANs.
@@ -327,6 +341,7 @@ Run the command and then in winbox or webfig go the 'Files' menu and select to d
 - [Mikrotik: Backup](https://wiki.mikrotik.com/wiki/Manual:System/Backup#Saving_a_backup)
 - [Mikrotik: Auto Upgrade](https://wiki.mikrotik.com/wiki/Manual:Upgrading_RouterOS#RouterOS_massive_auto-upgrade)
 - [Mikrotik: Upgrade and installation](https://help.mikrotik.com/docs/spaces/ROS/pages/328142/Upgrading+and+installation)
+- [Cloudflare DNS for Families](https://one.one.one.one/family/)
 
 ## Advanced Links
 
