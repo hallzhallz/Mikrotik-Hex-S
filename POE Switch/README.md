@@ -269,6 +269,15 @@ sign webfig
 set www-ssl certificate=webfig
 ```
 
+## Setup a queue for bandwith sharing (Quality of Service/QoS)
+This queue will fairly share the bandwith between all devices and applications using the sfq-default algorithm. You will need to set the `max-limit=` to just below what your ISP supports for download/upload.
+```
+/queue type
+add kind=sfq name=sfq-default sfq-perturb=3
+/queue simple
+add max-limit=46M/15M name=wan-qos queue=sfq-default/sfq-default target=ether1,ether1 total-queue=sfq-default
+```
+
 ## Setup bandwith monitoring graphs
 It is handy to see how much data has been uploaded/downloaded on the WAN and each VLAN. You can view the graphs by accessing the router IP slash graphs (https://192.168.100.1/graphs). We have also enabled CPU, Memory and Storage graphing.
 
