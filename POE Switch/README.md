@@ -227,6 +227,7 @@ add chain=forward action=accept comment="defconf: accept out ipsec policy" ipsec
 add action=fasttrack-connection chain=forward comment="defconf: fasttrack" connection-state=established,related
 add action=accept chain=forward comment="defconf: accept established,related, untracked" connection-state=established,related,untracked
 add action=accept chain=forward connection-state=new in-interface-list=VLAN out-interface-list=WAN comment="VLAN Internet Access Only"
+add chain=forward action=accept connection-state="new" in-interface-list=MGMT out-interface-list=VLAN disabled=yes comment="Allow main-vlan/MGMT access to all VLANS - enable for connections to iot over lan"
 add action=accept chain=forward connection-nat-state=dstnat connection-state=new in-interface-list=WAN disabled=yes comment="Allow Port Forwarding - DSTNAT - enable if need server" 
 add action=drop chain=forward comment="defconf: drop invalid" connection-state=invalid
 add action=drop chain=forward comment="Drop all other traffic"
